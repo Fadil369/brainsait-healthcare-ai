@@ -928,26 +928,26 @@ def page_llm_chat():
             text = f"Please answer in Arabic: {text}"
         
         response = generate_response(text)
-            
-            # Optional: Create Jira/Confluence from chat
-            if response:
-                with st.expander("📋 Save to Jira/Confluence", expanded=False):
-                    create_jira = st.checkbox("Create Jira issue", value=False, key="llm_create_jira")
-                    create_conf = st.checkbox("Create Confluence page", value=False, key="llm_create_conf")
-                    summary = st.text_input("Title", value=f"LLM Chat: {text[:50]}...", key="llm_summary")
+        
+        # Optional: Create Jira/Confluence from chat
+        if response:
+            with st.expander("📋 Save to Jira/Confluence", expanded=False):
+                create_jira = st.checkbox("Create Jira issue", value=False, key="llm_create_jira")
+                create_conf = st.checkbox("Create Confluence page", value=False, key="llm_create_conf")
+                summary = st.text_input("Title", value=f"LLM Chat: {text[:50]}...", key="llm_summary")
+                
+                if st.button("Save", key="llm_save"):
+                    created = {}
+                    response_text = response.content if hasattr(response, 'content') else str(response)
+                    description = f"Query: {text}\n\nResponse:\n{response_text}"
                     
-                    if st.button("Save", key="llm_save"):
-                        created = {}
-                        response_text = response.content if hasattr(response, 'content') else str(response)
-                        description = f"Query: {text}\n\nResponse:\n{response_text}"
-                        
-                        if create_jira:
-                            created["jira"] = create_jira_issue(
-                                st.session_state.get("jira_site", ""),
-                                st.session_state.get("jira_email", ""),
-                                st.session_state.get("jira_token", ""),
-                                st.session_state.get("jira_project_key", ""),
-                                summary,
+                    if create_jira:
+                        created["jira"] = create_jira_issue(
+                            st.session_state.get("jira_site", ""),
+                            st.session_state.get("jira_email", ""),
+                            st.session_state.get("jira_token", ""),
+                            st.session_state.get("jira_project_key", ""),
+                            summary,
                                 description,
                             )
                         if create_conf:
